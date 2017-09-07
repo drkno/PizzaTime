@@ -1,0 +1,116 @@
+<!doctype html>
+<html ng-app="pizzaApp">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+		<title>Pizza</title>
+
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.slim.js"></script>
+		<script	src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-socket-io/0.7.0/socket.min.js"></script>
+		<script src="http://dmytroyarmak.github.io/angular-flip-clock//dist/angular-flip-clock.full.js"></script>
+		<link rel="stylesheet" href="http://dmytroyarmak.github.io/angular-flip-clock/dist/angular-flip-clock.css">
+		<script	src="./controller.js"></script>
+	</head>
+	<body ng-controller="PizzaCtrl">
+		<div class="container">
+			<div class="jumbotron jumbotron-fluid" style="text-align: center" ng-hide="remainingTime == 0">
+				<div class="container" style="display: inline-block">
+					<dy-flip-clock time="{{remainingTime}}" style="display: inline-block"></dy-flip-clock>
+					<br />
+					<i>Time is running out...</i>
+				</div>
+			</div>
+			<div class="alert alert-danger" role="alert" ng-show="remainingTime == 0">
+				Pizza ordering has now closed.
+			</div>
+			<form ng-hide="remainingTime == 0 || hasOrdered">
+			    <div class="form-group row">
+					<label for="inputName" class="col-sm-2 col-form-label">Name</label>
+					<div class="col-sm-10">
+						<input type="text" class="form-control" id="inputName" placeholder="Name">
+					</div>
+			    </div>
+			    <div class="form-group row">
+					<label for="inputEmail" class="col-sm-2 col-form-label">Email</label>
+					<div class="col-sm-10">
+						<input type="email" class="form-control" id="inputEmail" placeholder="Email">
+					</div>
+			    </div>
+				<fieldset class="form-group">
+					<div class="row">
+						<legend class="col-form-legend col-sm-2">Toppings</legend>
+						<div class="col-sm-10">
+							<div class="form-check">
+								<label class="form-check-label">
+									<input class="form-check-input" type="checkbox" name="toppings" id="toppingsPepperoni" value="Pepperoni" checked>
+									Pepperoni
+								</label>
+							</div>
+							<div class="form-check">
+								<label class="form-check-label">
+									<input class="form-check-input" type="checkbox" name="toppings" id="toppingsMeatball" value="Meatball">
+									Meatball
+								</label>
+							</div>
+						</div>
+					</div>
+				</fieldset>
+			    <div class="form-group row">
+					<div class="col-sm-2">Misc</div>
+					<div class="col-sm-10">
+						<div class="form-check">
+							<label class="form-check-label">
+								<input class="form-check-input" name="other" id="inputCoke" type="checkbox" value="Coke"> Coke
+							</label>
+						</div>
+						<div class="form-check">
+							<label class="form-check-label">
+								<input class="form-check-input" name="other" id="inputGarlicK" type="checkbox" value="Garlic Knots"> Garlic Knots
+							</label>
+						</div>
+					</div>
+			    </div>
+				<div class="form-group row">
+					<div class="col-sm-10">
+						<button type="submit" class="btn btn-primary" ng-click="placeOrder()">PiiiiiZZZZAAAAAAAA!!!</button>
+					</div>
+				</div>
+			</form>
+			<div class="alert alert-warning" role="alert">
+				{{countPizza().length}} pizza{{countPizza().length == 1 ? '' : 's'}} should be ordered. {{countPizza().length == 1 ? 'This pizza' : 'These pizzas'}} should be:
+				<br />
+				<ul>
+					<li ng-repeat="pizza in countPizza()">{{pizza}}</li>
+				</ul>
+				<br />
+				Additionally, the following other items should be ordered:
+				<br />
+				<ul>
+					<li ng-repeat="misc in countMisc()">{{misc}}</li>
+				</ul>
+			</div>
+			<table class="table">
+				<thead class="thead-inverse">
+					<tr>
+						<th>Name</th>
+						<th>Email</th>
+						<th>Entitlements</th>
+						<th>Owes</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ng-repeat="order in orders">
+						<td>{{order.name}}</td>
+						<td>{{order.email}}</td>
+						<td>{{calcEntitlements(order)}}</td>
+						<td>{{calcOwes(order)}}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</body>
+</html>
