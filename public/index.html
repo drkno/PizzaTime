@@ -15,23 +15,63 @@
 		<script	src="./controller.js"></script>
 	</head>
 	<body ng-controller="PizzaCtrl">
-		<div class="container">
+		<div class="container" ng-show="timeout">
 			<table class="table table-responsive">
 				<thead class="thead-inverse">
 					<tr>
-						<th>Name</th>
-						<th>Extras</th>
-						<th></th>
-						<th></th>
+						<th style="text-align:center">Name</th>
+						<th style="text-align:center">Extras</th>
+						<th style="text-align:center">Owes</th>
 					</tr>
 				</thead>
 				<tbody>
-					<tr ng-repeat="user in users.users">
+					<tr ng-repeat="user in users.users | filter: joinedFilter" style="text-align:center">
 						<td>{{user.name}}</td>
 						<td>
 							<div class="form-check">
 								<label class="form-check-label">
-									<input class="form-check-input" type="checkbox" ng-model="user.garlicKnots" ng-change="toggleGarlicKnots(user)">
+									<input class="form-check-input" type="checkbox" ng-model="user.garlicKnots" disabled>
+									Garlic Knots
+								</label>
+							</div>
+						</td>
+						<td>
+							$ {{calcOwes(user)}}
+						</td>
+					</tr>
+					<tr class="table-active">
+						<td colspan="3" style="text-align:center">
+							<div class="form-inline" style="display:inline-block;width:100%">
+								<label for="inputPizzas" class="mr-sm-2">Total Pizzas</label>
+								<input type="number" class="form-control" id="inputPizzas" ng-model="totalPizzas" ng-change="notifyPizzaNumber()">
+							</div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div class="container" ng-hide="timeout">
+			<div class="jumbotron jumbotron-fluid" style="text-align:center">
+				<div class="container">
+					<h1 class="display-3">{{remainingTime}}</h1>
+					<p class="lead">Piiiiiiizzzzzzzzaaaaaaaaaa ordering time is running out.</p>
+				</div>
+			</div>
+			<table class="table table-responsive">
+				<thead class="thead-inverse">
+					<tr>
+						<th style="text-align:center">Name</th>
+						<th style="text-align:center">Extras</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ng-repeat="user in users.users" style="text-align:center" ng-class="{'table-danger':!user.joined}">
+						<td>{{user.name}}</td>
+						<td>
+							<div class="form-check">
+								<label class="form-check-label">
+									<input class="form-check-input" type="checkbox" ng-model="user.garlicKnots" ng-change="toggleGarlicKnots(user)" ng-disabled="!user.joined">
 									Garlic Knots
 								</label>
 							</div>
@@ -39,18 +79,15 @@
 						<td>
 							<button type="button" class="btn btn-success btn-sm" ng-hide="user.joined" ng-click="joinOrder(user)">Join Pizza Order</button>
 							<button type="button" class="btn btn-warning btn-sm" ng-show="user.joined" ng-click="leaveOrder(user)">Leave Pizza Order</button>
-						</td>
-						<td>
 							<button type="button" class="btn btn-danger btn-sm" ng-click="removeUser(user)">I don't like pizza</button>
 						</td>
 					</tr>
-					<tr>
-						<td colspan="2">
-							<input type="text" class="form-control" id="inputName" placeholder="New Persons Name" ng-model="newPerson.name">
-						</td>
-						<td></td>
-						<td>
-							<button type="button" class="btn btn-success btn-sm" ng-click="addUser()">I want pizza</button>
+					<tr class="table-active">
+						<td colspan="3" style="text-align:center">
+							<div class="form-inline" style="display:inline-block;width:100%">
+								<input type="text" class="form-control" id="inputName" placeholder="Your Name" ng-model="newPerson.name" style="width:50%">
+								<button type="button" class="btn btn-success" ng-click="addUser()">I want pizza</button>
+							</div>
 						</td>
 					</tr>
 				</tbody>

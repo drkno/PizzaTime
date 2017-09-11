@@ -4,20 +4,78 @@ pizzaApp.factory('pSocket', function (socketFactory) {
 });
 pizzaApp.controller("PizzaCtrl", function($scope, $interval, pSocket) {
     $scope.newPerson = {};
+    $scope.remainingTime = 'Loading...';
+    $scope.timeout = false;
+    $scope.totalPizzas = 1;
     $scope.users = new window.Users();
 
     $scope.users.configureSocket(pSocket);
 
-    //$interval(() => {
-        // if (countdownUntil > 0) {
-        //     $scope.remainingTime = Math.max(countdownUntil - Date.now(), 0);
-        // }
-    //}, 1000);
+    $scope.notifyPizzaNumber = () => {
+        if ($scope.totalPizzas < 1 || isNaN($scope.totalPizzas)) {
+            $scope.totalPizzas = 1;
+        }
+        pSocket.emit('num_pizzas', $scope.totalPizzas);
+    };
+    pSocket.on('num_pizzas', num => $scope.totalPizzas = num);
+
+    $scope.calcOwes = u => {
+        let totalGarlic = 0;
+        let totalPeople = 0;
+        for (let user of $scope.users.users) {
+            if (user.joined) {
+                if (user.garlicKnots) {
+                    totalGarlic += 1;
+                }
+                totalPeople++;
+            }
+        }
+
+        let total = ($scope.totalPizzas * 35.0) / totalPeople;
+        if (u.garlicKnots) {
+            const garlicCost = Math.floor(totalGarlic / 3) * 4.0 + (totalGarlic % 3) * 1.5;
+            total += garlicCost / totalGarlic;
+        }
+        return total.toFixed(2);
+    };
+
+    $scope.joinedFilter = item => item.joined;
+
+    const pad = t => t < 10 ? '0' + t.toString() : t.toString();
+    $interval(() => {
+    	const now = new Date();
+        const until = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 21, 0, 0);
+
+        let diff = until - now;
+
+        const hours = Math.floor(diff / 3600000);
+        diff -= hours * 3600000;
+
+        const mins = Math.floor(diff / 60000);
+        diff -= mins * 60000;
+
+        const secs = Math.floor(diff / 1000);
+
+        if (until - now < 0 && !$scope.timeout) {
+            $scope.timeout = true;
+        }
+        else if (until - now > 0 && $scope.timeout) {
+            for (let user of $scope.users.users) {
+                $scope.leaveOrder(user);
+            }
+            $scope.timeout = false;
+        }
+
+        $scope.remainingTime = `${pad(hours)}:${pad(mins)}:${pad(secs)}`;
+    }, 1000);
 
 
     //#region InitReset
 
-    pSocket.on('init', $scope.users.init);
+    pSocket.on('init', data => {
+        $scope.users.init(data.users);
+        $scope.totalPizzas = data.totalPizzas;
+    });
     pSocket.emit('init');
 
     $scope.resetEverything = () => {
@@ -58,7 +116,7 @@ pizzaApp.controller("PizzaCtrl", function($scope, $interval, pSocket) {
     const resetUserInput = () => {
         $scope.newPerson = {
             name: '',
-            joined: false,
+            joined: true,
             garlicKnots: false,
             payer: false
         };

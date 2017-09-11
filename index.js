@@ -1,12 +1,32 @@
 const express = require('express'),
     socketio = require('socket.io'),
 	http = require('http'),
+    fs = require('fs'),
     Users = require('./public/state.js');
 
 const users = new Users();
+let totalPizzas = 1;
 const app = express();
 const server = http.Server(app);
 const io = socketio(server);
+
+const onExit = () => {
+    fs.writeFileSync('backup.json', JSON.stringify({
+        users: users.users,
+        npizzas: totalPizzas
+    }), 'utf8');
+    process.exit();
+};
+
+process.on('SIGINT', onExit);
+process.on('exit', onExit);
+
+try {
+    const d = require('./backup.json');
+    users.init(d.users);
+    totalPizzas = d.npizzas;
+}
+catch(e) {}
 
 app.use((req, res, next) => {
 	req.body = '';
@@ -56,7 +76,8 @@ app.post('/api/:pizza(iwantpizz+a)', (req, res) => {
 
 const onInit = socket => {
     socket.emit('init', {
-        users: users.users
+        users: users.users,
+        totalPizzas: totalPizzas
     });
 };
 
@@ -65,10 +86,16 @@ const onReset = socket => {
     onInit(socket);
 }
 
+const onNumPizzas = (socket, num) => {
+    totalPizzas = num;
+    socket.broadcast.emit('num_pizzas', num);
+};
+
 io.on('connection', socket => {
     users.configureSocket(socket, true);
 	socket.on('init', onInit.bind(this, socket));
 	socket.on('reset', onReset.bind(this, socket));
+    socket.on('num_pizzas', onNumPizzas.bind(this, socket));
 	socket.on('disconnect', () => socket.removeAllListeners());
 });
 

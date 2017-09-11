@@ -45,7 +45,7 @@ class Users {
     }
 }
 
-if (!!module && !!module.exports) {
+if (typeof(module) !== 'undefined') {
     module.exports = Users;
 }
 else {
