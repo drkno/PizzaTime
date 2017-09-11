@@ -45,10 +45,10 @@ class Users {
     }
 }
 
-if (module && module.exports) {
+if (!!module && !!module.exports) {
     module.exports = Users;
 }
 else {
     // node.js has a runtime compile failure without eval
-    eval('export default Users;');
+    window.Users = Users;
 }

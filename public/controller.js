@@ -1,12 +1,10 @@
-import Users from './state.js';
-
-const pizzaApp = angular.module("pizzaApp", ['dyFlipClock', 'btford.socket-io']);
+const pizzaApp = angular.module("pizzaApp", ['btford.socket-io']);
 pizzaApp.factory('pSocket', function (socketFactory) {
     return socketFactory();
 });
 pizzaApp.controller("PizzaCtrl", function($scope, $interval, pSocket) {
     $scope.newPerson = {};
-    $scope.users = new Users();
+    $scope.users = new window.Users();
 
     $scope.users.configureSocket(pSocket);
 
