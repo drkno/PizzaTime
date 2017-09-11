@@ -11,103 +11,46 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.slim.js"></script>
 		<script	src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-socket-io/0.7.0/socket.min.js"></script>
-		<script src="http://dmytroyarmak.github.io/angular-flip-clock//dist/angular-flip-clock.full.js"></script>
-		<link rel="stylesheet" href="http://dmytroyarmak.github.io/angular-flip-clock/dist/angular-flip-clock.css">
 		<script	src="./controller.js"></script>
 	</head>
 	<body ng-controller="PizzaCtrl">
 		<div class="container">
-			<div class="jumbotron jumbotron-fluid" style="text-align: center" ng-hide="remainingTime == 0">
-				<div class="container" style="display: inline-block">
-					<dy-flip-clock time="{{remainingTime}}" style="display: inline-block"></dy-flip-clock>
-					<br />
-					<i>Time is running out...</i>
-				</div>
-			</div>
-			<div class="alert alert-danger" role="alert" ng-show="remainingTime == 0">
-				Pizza ordering has now closed.
-			</div>
-			<form ng-hide="remainingTime == 0 || hasOrdered">
-			    <div class="form-group row">
-					<label for="inputName" class="col-sm-2 col-form-label">Name</label>
-					<div class="col-sm-10">
-						<input type="text" class="form-control" id="inputName" placeholder="Name">
-					</div>
-			    </div>
-			    <div class="form-group row">
-					<label for="inputEmail" class="col-sm-2 col-form-label">Email</label>
-					<div class="col-sm-10">
-						<input type="email" class="form-control" id="inputEmail" placeholder="Email">
-					</div>
-			    </div>
-				<fieldset class="form-group">
-					<div class="row">
-						<legend class="col-form-legend col-sm-2">Toppings</legend>
-						<div class="col-sm-10">
-							<div class="form-check">
-								<label class="form-check-label">
-									<input class="form-check-input" type="checkbox" name="toppings" id="toppingsPepperoni" value="Pepperoni" checked>
-									Pepperoni
-								</label>
-							</div>
-							<div class="form-check">
-								<label class="form-check-label">
-									<input class="form-check-input" type="checkbox" name="toppings" id="toppingsMeatball" value="Meatball">
-									Meatball
-								</label>
-							</div>
-						</div>
-					</div>
-				</fieldset>
-			    <div class="form-group row">
-					<div class="col-sm-2">Misc</div>
-					<div class="col-sm-10">
-						<div class="form-check">
-							<label class="form-check-label">
-								<input class="form-check-input" name="other" id="inputCoke" type="checkbox" value="Coke"> Coke
-							</label>
-						</div>
-						<div class="form-check">
-							<label class="form-check-label">
-								<input class="form-check-input" name="other" id="inputGarlicK" type="checkbox" value="Garlic Knots"> Garlic Knots
-							</label>
-						</div>
-					</div>
-			    </div>
-				<div class="form-group row">
-					<div class="col-sm-10">
-						<button type="submit" class="btn btn-primary" ng-click="placeOrder()">PiiiiiZZZZAAAAAAAA!!!</button>
-					</div>
-				</div>
-			</form>
-			<div class="alert alert-warning" role="alert">
-				{{countPizza().length}} pizza{{countPizza().length == 1 ? '' : 's'}} should be ordered. {{countPizza().length == 1 ? 'This pizza' : 'These pizzas'}} should be:
-				<br />
-				<ul>
-					<li ng-repeat="pizza in countPizza()">{{pizza}}</li>
-				</ul>
-				<br />
-				Additionally, the following other items should be ordered:
-				<br />
-				<ul>
-					<li ng-repeat="misc in countMisc()">{{misc}}</li>
-				</ul>
-			</div>
-			<table class="table">
+			<table class="table table-responsive">
 				<thead class="thead-inverse">
 					<tr>
 						<th>Name</th>
-						<th>Email</th>
-						<th>Entitlements</th>
-						<th>Owes</th>
+						<th>Extras</th>
+						<th></th>
+						<th></th>
 					</tr>
 				</thead>
 				<tbody>
-					<tr ng-repeat="order in orders">
-						<td>{{order.name}}</td>
-						<td>{{order.email}}</td>
-						<td>{{calcEntitlements(order)}}</td>
-						<td>{{calcOwes(order)}}</td>
+					<tr ng-repeat="user in users">
+						<td>{{user.name}}</td>
+						<td>
+							<div class="form-check">
+								<label class="form-check-label">
+									<input class="form-check-input" type="checkbox" ng-model="user.garlicKnots" ng-click="addGarlicKnots(user)">
+									Garlic Knots
+								</label>
+							</div>
+						</td>
+						<td>
+							<button type="button" class="btn btn-success btn-sm" ng-hide="user.joined" ng-click="joinOrder(user)">Join Pizza Order</button>
+							<button type="button" class="btn btn-warning btn-sm" ng-show="user.joined" ng-click="leaveOrder(user)">Leave Pizza Order</button>
+						</td>
+						<td>
+							<button type="button" class="btn btn-danger btn-sm" ng-click="removeUser(user)">I don't like pizza</button>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2">
+							<input type="text" class="form-control" id="inputName" placeholder="New Persons Name" ng-model="newPerson.name">
+						</td>
+						<td></td>
+						<td>
+							<button type="button" class="btn btn-success btn-sm" ng-click="addUser(user)">I want pizza</button>
+						</td>
 					</tr>
 				</tbody>
 			</table>
