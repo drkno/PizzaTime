@@ -56,7 +56,7 @@ app.post('/api/:pizza(iwantpizz+a)', (req, res) => {
 
 const onInit = socket => {
     socket.emit('init', {
-        users: users.users;
+        users: users.users
     });
 };
 
