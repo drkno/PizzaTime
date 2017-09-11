@@ -1,41 +1,89 @@
+import Users from './state.js';
+
 const pizzaApp = angular.module("pizzaApp", ['dyFlipClock', 'btford.socket-io']);
 pizzaApp.factory('pSocket', function (socketFactory) {
     return socketFactory();
 });
 pizzaApp.controller("PizzaCtrl", function($scope, $interval, pSocket) {
-    $interval(() => {
+    $scope.newPerson = {};
+    $scope.users = new Users();
+
+    $scope.users.configureSocket(pSocket);
+
+    //$interval(() => {
         // if (countdownUntil > 0) {
         //     $scope.remainingTime = Math.max(countdownUntil - Date.now(), 0);
         // }
-    }, 1000);
+    //}, 1000);
 
-    $scope.sendUpdate = user => {
 
+    //#region InitReset
+
+    pSocket.on('init', $scope.users.init);
+    pSocket.emit('init');
+
+    $scope.resetEverything = () => {
+        pSocket.emit('reset');
     };
 
-    $scope.joinOrder = user => {
-        user.joined = true;
-        pSocket.emit('join', user);
+    //#endregion InitReset
+    //#region Join Order
+
+    $scope.toggleGarlicKnots = user => {
+        if (user.garlicKnots) {
+            pSocket.emit('order_knots_add', user);
+        }
+        else {
+            pSocket.emit('order_knots_remove', user);
+        }
     };
+
+    //#endregion Garlic Knots
+    //#region Leave Order
 
     $scope.leaveOrder = user => {
+        pSocket.emit('order_leave', user);
         user.joined = false;
-        pSocket.emit('leave', user);
     };
 
-    $scope.addUser = user => {
-        pSocket.emit('newUser', $scope.newPerson);
+    //#endregion Leave Order
+    //#region Join Order
+
+    $scope.joinOrder = user => {
+        pSocket.emit('order_joined', user);
+        user.joined = true;
     };
 
-    $scope.addGarlicKnots = user => {
+    //#endregion Join Order
+    //#region Add User
 
+    const resetUserInput = () => {
+        $scope.newPerson = {
+            name: '',
+            joined: false,
+            garlicKnots: false,
+            payer: false
+        };
     };
 
-    $scope.newPerson = {
-        name: ''
+    $scope.addUser = () => {
+        if ($scope.users.users.find(u => u.name === $scope.newPerson.name)) {
+            return alert('Cannot add another person with the same name.');
+        }
+        pSocket.emit('add_user', $scope.newPerson);
+        $scope.users.addUser($scope.newPerson);
+        resetUserInput();
     };
 
-user.garlicKnots
-user.joined
-removeUser(user)
+    resetUserInput();
+
+    //#endregion Add User
+    //#region Remove User
+
+    $scope.removeUser = user => {
+        pSocket.emit('remove_user', user);
+        $scope.users.removeUser(user);
+    };
+
+    //#endregion Remove User
 });

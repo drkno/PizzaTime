@@ -25,12 +25,12 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr ng-repeat="user in users">
+					<tr ng-repeat="user in users.users">
 						<td>{{user.name}}</td>
 						<td>
 							<div class="form-check">
 								<label class="form-check-label">
-									<input class="form-check-input" type="checkbox" ng-model="user.garlicKnots" ng-click="addGarlicKnots(user)">
+									<input class="form-check-input" type="checkbox" ng-model="user.garlicKnots" ng-change="toggleGarlicKnots(user)">
 									Garlic Knots
 								</label>
 							</div>
@@ -49,7 +49,7 @@
 						</td>
 						<td></td>
 						<td>
-							<button type="button" class="btn btn-success btn-sm" ng-click="addUser(user)">I want pizza</button>
+							<button type="button" class="btn btn-success btn-sm" ng-click="addUser()">I want pizza</button>
 						</td>
 					</tr>
 				</tbody>

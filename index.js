@@ -1,7 +1,9 @@
 const express = require('express'),
     socketio = require('socket.io'),
-	http = require('http');
+	http = require('http'),
+    Users = require('./public/state.js');
 
+const users = new Users();
 const app = express();
 const server = http.Server(app);
 const io = socketio(server);
@@ -52,35 +54,21 @@ app.post('/api/:pizza(iwantpizz+a)', (req, res) => {
 	}
 });
 
-const orders = [];
-
 const onInit = socket => {
-	const today = new Date();
-	const countdownUntil = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 11, 30).getTime();
-	socket.emit('init', {
-		countdownUntil: countdownUntil,
-		orders: orders
-	});
+    socket.emit('init', {
+        users: users.users;
+    });
 };
 
 const onReset = socket => {
-	orders = [];
-	onInit(socket);
-};
-
-const onOrder = (socket, order) => {
-    socket.broadcast.emit('order', order);
-};
-
-const onSpecs = (socket, spec) => {
-    socket.broadcast.emit('specs', spec);
-};
+    users.init([]);
+    onInit(socket);
+}
 
 io.on('connection', socket => {
+    users.configureSocket(socket, true);
 	socket.on('init', onInit.bind(this, socket));
 	socket.on('reset', onReset.bind(this, socket));
-	socket.on('order', onOrder.bind(this, socket));
-	socket.on('specs', onSpecs.bind(this, socket));
 	socket.on('disconnect', () => socket.removeAllListeners());
 });
 
