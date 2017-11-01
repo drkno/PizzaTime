@@ -10,6 +10,7 @@
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.slim.js"></script>
 		<script	src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular.min.js"></script>
+		<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular-sanitize.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-socket-io/0.7.0/socket.min.js"></script>
 		<script src="./state.js"></script>
 		<script	src="./controller.js"></script>
@@ -26,7 +27,7 @@
 				</thead>
 				<tbody>
 					<tr ng-repeat="user in users.users | filter: joinedFilter" style="text-align:center">
-						<td>{{user.name}}</td>
+						<td ng-bind-html="user.name | trusted"></td>
 						<td>
 							<div class="form-check">
 								<label class="form-check-label">
@@ -61,14 +62,20 @@
 				<thead class="thead-inverse">
 					<tr>
 						<th style="text-align:center">Name</th>
-						<th style="text-align:center">Extras</th>
-						<th></th>
+						<th style="text-align:center">Specifics</th>
+						<th style="text-align:center">Leave/Join</th>
 					</tr>
 				</thead>
 				<tbody>
 					<tr ng-repeat="user in users.users" style="text-align:center" ng-class="{'table-danger':!user.joined}">
-						<td>{{user.name}}</td>
+						<td ng-bind-html="user.name | trusted"></td>
 						<td>
+							<div class="form-inline" style="display:none">
+								<label class="form-check-label">
+									Pizza Slices
+									<input class="form-control" type="number" ng-model="user.slices" ng-change="changeNumSlices(user)" ng-disabled="true || !user.joined" ng-value="3" value="3">
+								</label>
+							</div>
 							<div class="form-check">
 								<label class="form-check-label">
 									<input class="form-check-input" type="checkbox" ng-model="user.garlicKnots" ng-change="toggleGarlicKnots(user)" ng-disabled="!user.joined">
@@ -88,10 +95,17 @@
 								<input type="text" class="form-control" id="inputName" placeholder="Your Name" ng-model="newPerson.name" style="width:50%">
 								<button type="button" class="btn btn-success" ng-click="addUser()">I want pizza</button>
 							</div>
+							<p><i style="font-size:0.8em;color:darkgray">Now with HTML-Injection Support&trade;</i></p>
 						</td>
 					</tr>
 				</tbody>
 			</table>
 		</div>
+		<script>
+		if (navigator.appName == 'Microsoft Internet Explorer' || !!(navigator.userAgent.match(/Trident/) ||
+			navigator.userAgent.match(/rv:11/)) || (typeof $.browser !== "undefined" && $.browser.msie == 1)) {
+			document.getElementsByTagName('body')[0].innerHTML = '<h1>Why are you still using IE?!</h1><br /><img src="https://media.tenor.com/images/21d4549b64051e4ad60cb58c95beb82c/tenor.gif">';
+		}
+		</script>
 	</body>
 </html>

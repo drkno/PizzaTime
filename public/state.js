@@ -15,6 +15,12 @@ class Users {
         events['order_joined'] = user => this.users.find(u => u.name === user.name).joined = true;
         events['add_user'] = this.addUser.bind(this);
         events['remove_user'] = this.removeUser.bind(this);
+        events['order_num_slices'] = user => {
+            if (user.slices < 1 || isNaN(user.slices)) {
+                user.slices = 1;
+            }
+            this.users.find(u => u.name === user.name).slices = user.slices;
+        };
 
         for (let event in events) {
             io.on(event, (...data) => {

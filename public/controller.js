@@ -1,4 +1,9 @@
-const pizzaApp = angular.module("pizzaApp", ['btford.socket-io']);
+const pizzaApp = angular.module("pizzaApp", ['btford.socket-io', 'ngSanitize']);
+pizzaApp.filter('trusted', function($sce){
+	return function(html){
+		return $sce.trustAsHtml(html);
+	}
+});
 pizzaApp.factory('pSocket', function (socketFactory) {
     return socketFactory();
 });
@@ -10,6 +15,13 @@ pizzaApp.controller("PizzaCtrl", function($scope, $interval, pSocket) {
     $scope.users = new window.Users();
 
     $scope.users.configureSocket(pSocket);
+
+    $scope.changeNumSlices = user => {
+        if (user.slices < 1 || isNaN(user.slices)) {
+            user.slices = 1;
+        }
+        pSocket.emit('order_num_slices', user);
+    };
 
     $scope.notifyPizzaNumber = () => {
         if ($scope.totalPizzas < 1 || isNaN($scope.totalPizzas)) {
@@ -44,7 +56,7 @@ pizzaApp.controller("PizzaCtrl", function($scope, $interval, pSocket) {
     const pad = t => t < 10 ? '0' + t.toString() : t.toString();
     $interval(() => {
     	const now = new Date();
-        const until = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 21, 0, 0);
+        const until = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 11, 40, 0);
 
         let diff = until - now;
 
