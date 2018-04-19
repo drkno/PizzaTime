@@ -5,7 +5,7 @@
 		<title>Pizza</title>
 
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" crossorigin="anonymous">
-		<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js" crossorigin="anonymous"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.slim.js"></script>
@@ -27,7 +27,7 @@
 				</thead>
 				<tbody>
 					<tr ng-repeat="user in users.users | filter: joinedFilter" style="text-align:center">
-						<td ng-bind-html="user.name | trusted"></td>
+						<td ng-bind-html="user.name | trusted" style="max-width:500px;overflow-wrap:break-word;overflow:hidden;display:flex;max-height:250px"></td>
 						<td>
 							<div class="form-check">
 								<label class="form-check-label">
@@ -68,7 +68,7 @@
 				</thead>
 				<tbody>
 					<tr ng-repeat="user in users.users" style="text-align:center" ng-class="{'table-danger':!user.joined}">
-						<td ng-bind-html="user.name | trusted"></td>
+						<td ng-bind-html="user.name | trusted" style="max-width:500px;overflow-wrap:break-word;overflow:hidden;display:flex;max-height:250px"></td>
 						<td>
 							<div class="form-inline" style="display:none">
 								<label class="form-check-label">
@@ -84,8 +84,8 @@
 							</div>
 						</td>
 						<td>
-							<button type="button" class="btn btn-success btn-sm" ng-hide="user.joined" ng-click="joinOrder(user)">Join Pizza Order</button>
-							<button type="button" class="btn btn-warning btn-sm" ng-show="user.joined" ng-click="leaveOrder(user)">Leave Pizza Order</button>
+							<!--button type="button" class="btn btn-success btn-sm" ng-hide="user.joined" ng-click="joinOrder(user)">Join Pizza Order</button>
+							<button type="button" class="btn btn-warning btn-sm" ng-show="user.joined" ng-click="leaveOrder(user)">Leave Pizza Order</button-->
 							<button type="button" class="btn btn-danger btn-sm" ng-click="removeUser(user)">I don't like pizza</button>
 						</td>
 					</tr>
@@ -104,7 +104,7 @@
 		<script>
 		if (navigator.appName == 'Microsoft Internet Explorer' || !!(navigator.userAgent.match(/Trident/) ||
 			navigator.userAgent.match(/rv:11/)) || (typeof $.browser !== "undefined" && $.browser.msie == 1)) {
-			document.getElementsByTagName('body')[0].innerHTML = '<h1>Why are you still using IE?!</h1><br /><img src="https://media.tenor.com/images/21d4549b64051e4ad60cb58c95beb82c/tenor.gif">';
+			document.getElementsByTagName('body')[0].innerHTML = '<h1>Why are you still using IE?!</h1><br /><small>Microsofts ignorance of standards as well as my distaste for fixing it means this page will not work in this browser.</small><br /><img src="https://media.tenor.com/images/21d4549b64051e4ad60cb58c95beb82c/tenor.gif"><br/><small>Why not try something from the 21st century? E.g. Chrome, Firefox, Opera, Safari, or even Edge?</small>';
 		}
 		</script>
 	</body>

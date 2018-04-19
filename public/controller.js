@@ -56,7 +56,7 @@ pizzaApp.controller("PizzaCtrl", function($scope, $interval, pSocket) {
     const pad = t => t < 10 ? '0' + t.toString() : t.toString();
     $interval(() => {
     	const now = new Date();
-        const until = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 11, 40, 0);
+        const until = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 11, 30, 0);
 
         let diff = until - now;
 
