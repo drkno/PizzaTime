@@ -73,7 +73,7 @@ pizzaApp.controller("PizzaCtrl", function($scope, $interval, pSocket) {
         }
         else if (until - now > 0 && $scope.timeout) {
             for (let user of $scope.users.users) {
-                $scope.leaveOrder(user);
+                $scope.removeUser(user);
             }
             $scope.timeout = false;
         }
