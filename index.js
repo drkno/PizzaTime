@@ -99,4 +99,4 @@ io.on('connection', socket => {
 	socket.on('disconnect', () => socket.removeAllListeners());
 });
 
-server.listen(1234);
+server.listen(process.env.PORT || 1234);
